@@ -51,6 +51,13 @@ class SettingPage extends StatelessWidget {
             onToggle: (value) => cubit.allowExperimentalRestServer = value,
             title: _settingsText("REST Server"),
           ),
+          SettingsTile.switchTile(
+            initialValue: cubit.handyStopOnTarget,
+            onToggle: (value) => cubit.handyStopOnTarget = value,
+            title: _settingsText("The Handy: Stop At Each Position Target"),
+            description: _settingsText(
+                "Firmware 4 over Bluetooth. Off, the Handy keeps moving until the next command arrives. Applies when the server starts."),
+          ),
           if (isDesktop())
             SettingsTile.switchTile(
               initialValue: cubit.usePrereleaseVersion,

@@ -1,4 +1,25 @@
-# Intiface® Central
+# Intiface Central — Handy Stop-at-Target Fork
+
+This unofficial Intiface Central fork adds **The Handy: Stop At Each Position Target** under Experimental Features for Handy firmware 4 over Bluetooth. The fork enables it by default on a fresh setup. Restart the server after changing the setting. The option helps when a live game sends a move and the next command is delayed.
+
+Download the Windows x64 installer from [Fork releases](https://github.com/JohnnyGuides/intiface-central-handy-stop-on-target/releases). The fork has a separate Windows install and settings folder. If you replace the fork with an official Intiface release, the setting will be removed. [Official Intiface Central](https://github.com/intiface/intiface-central) is maintained by Nonpolynomial Labs.
+
+### Build the fork
+
+Clone the pinned Buttplug source into a directory named `buttplug` next to this checkout, then apply the included driver patch.
+
+```sh
+git clone --config core.autocrlf=false https://github.com/buttplugio/buttplug.git ../buttplug
+git -C ../buttplug checkout --detach 179b0d9306f519912c10bdddd111686622b7f63a
+git -C ../buttplug apply --check ../intiface-central-handy-stop-on-target/patches/handy-stop-on-target.patch
+git -C ../buttplug apply ../intiface-central-handy-stop-on-target/patches/handy-stop-on-target.patch
+flutter pub get
+flutter build windows --release
+```
+
+These commands assume this checkout is named `intiface-central-handy-stop-on-target`. To build the installer, set `BUILD_VERSION` to the version in `pubspec.yaml` and compile `intiface-central-installer.iss` with Inno Setup. Build requirements are listed in the upstream README below.
+
+## Upstream README
 
 [![Patreon donate button](https://img.shields.io/badge/patreon-donate-yellow.svg)](https://www.patreon.com/qdot)
 [![Github donate button](https://img.shields.io/badge/github-donate-ff69b4.svg)](https://www.github.com/sponsors/qdot)

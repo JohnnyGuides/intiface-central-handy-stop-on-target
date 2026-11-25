@@ -20,7 +20,6 @@ import 'package:intiface_central/bloc/engine/engine_control_bloc.dart';
 import 'package:intiface_central/bloc/engine/engine_repository.dart';
 import 'package:intiface_central/bloc/engine/foreground_task_library_engine_provider.dart';
 import 'package:intiface_central/bloc/engine/library_engine_provider.dart';
-import 'package:intiface_central/bloc/update/github_update_provider.dart';
 import 'package:intiface_central/bloc/update/update_bloc.dart';
 import 'package:intiface_central/bloc/update/update_repository.dart';
 import 'package:intiface_central/bloc/util/app_reset_cubit.dart';
@@ -143,7 +142,7 @@ class IntifaceCentralApp extends StatelessWidget with WindowListener, TrayListen
     await trayManager.setIcon(
       Platform.isWindows ? 'assets/icons/intiface_central_icon.ico' : 'assets/icons/intiface_central_icon.png',
     );
-    await trayManager.setToolTip('Intiface Central');
+    await trayManager.setToolTip("Intiface Central — Handy Stop-at-Target Fork");
     await _updateTrayMenu();
     trayManager.addListener(this);
 
@@ -254,7 +253,8 @@ class IntifaceCentralApp extends StatelessWidget with WindowListener, TrayListen
       // Must add this line before we work with the manager.
       await windowManager.ensureInitialized();
 
-      String windowTitle = kDebugMode ? "Intiface® Central $packageVersion DEBUG" : "Intiface® Central $packageVersion";
+      final windowTitle = "Intiface Central — Handy Stop-at-Target Fork $packageVersion"
+          "${kDebugMode ? ' DEBUG' : ''}";
 
       WindowOptions windowOptions = const WindowOptions(
         //center: true,
@@ -309,11 +309,6 @@ class IntifaceCentralApp extends StatelessWidget with WindowListener, TrayListen
         }
         windowDisplayModeResize(event.value, guiSettingsCubit);
       });
-
-      // Only add app update checks on desktop, mobile apps will use stores.
-      if (options.initializeUpdates) {
-        updateRepo.addProvider(IntifaceCentralDesktopUpdater());
-      }
     } else if (!isDesktop() && options.requestPlatformPermissions) {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -396,11 +391,6 @@ class IntifaceCentralApp extends StatelessWidget with WindowListener, TrayListen
         // Load the file and pull internal version while we're at it.
         var deviceConfigVersion = await DeviceConfiguration.getBaseConfigFileVersion();
         configCubit.currentDeviceConfigVersion = deviceConfigVersion;
-      }
-      if (isDesktop()) {
-        if (state is IntifaceCentralUpdateAvailable) {
-          configCubit.latestAppVersion = state.version;
-        }
       }
     });
 

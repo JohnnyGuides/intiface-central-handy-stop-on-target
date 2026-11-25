@@ -45,6 +45,7 @@ void main() {
       expect(cubit.serverName, 'Intiface Server');
       expect(cubit.websocketServerPort, 12345);
       expect(cubit.startServerOnStartup, false);
+      expect(cubit.handyStopOnTarget, true);
       expect(cubit.useSimulatedDevices, true);
       cubit.close();
     });

@@ -442,8 +442,6 @@ checksum = "72f5acc6cb2ba439de613abc23857ec3d78374d8ed5ac84e9d11336e87da8649"
 [[package]]
 name = "buttplug_client"
 version = "11.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "227e3db28101c03d2e94d56aa3d7b62ce24da992d84fe143c48b6e60c763b65c"
 dependencies = [
  "buttplug_core",
  "dashmap 6.2.1",
@@ -463,8 +461,6 @@ dependencies = [
 [[package]]
 name = "buttplug_client_in_process"
 version = "12.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fcd397c3eb7efbcfbe4c84e46cf9c10773b6a4a23f79f5057c25739ce3fbeb2"
 dependencies = [
  "buttplug_client",
  "buttplug_core",
@@ -489,8 +485,6 @@ dependencies = [
 [[package]]
 name = "buttplug_core"
 version = "11.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62d660e6301194d74a66e040cd1ad30741727a2f8731e033eb6d71b157283884"
 dependencies = [
  "async-stream",
  "cfg-if",
@@ -519,8 +513,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server"
 version = "12.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46d6ce21f035cb8f87c24973e8ea0f17633b94b67144aeaf9b75377c745d6f7c"
 dependencies = [
  "aes",
  "async-trait",
@@ -560,8 +552,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_device_config"
 version = "12.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22f04026ed8b9ad540cff6f30b8bb45eeb80c6d3bfa7c2cebc91e4bb426d1ea0"
 dependencies = [
  "buttplug_core",
  "dashmap 6.2.1",
@@ -585,8 +575,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_hwmgr_btleplug"
 version = "12.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00a316246049a131d9f3c56920d04015c08e555357b141b54ba22cf8e0f08cb1"
 dependencies = [
  "async-trait",
  "btleplug",
@@ -606,8 +594,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_hwmgr_lovense_connect"
 version = "12.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c40100dc4d0ccde4212b9da7f823e90b4540cb3b14f6c8f79656abfaa4438b2a"
 dependencies = [
  "async-trait",
  "buttplug_core",
@@ -631,8 +617,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_hwmgr_lovense_dongle"
 version = "12.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31248945855c6f0db5f30437d835cefcabb19a3dd91f1829d1f4ae93d86b2687"
 dependencies = [
  "async-trait",
  "buttplug_core",
@@ -656,8 +640,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_hwmgr_sdl_gamepad"
 version = "12.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24cfc97c4be8c205bf9466a07c0647c8e952219b3232ae9e0b4dacb44d88d628"
 dependencies = [
  "async-trait",
  "buttplug_core",
@@ -679,8 +661,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_hwmgr_serial"
 version = "12.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d42132bf5f049ec66d839fc01402fc3af21578b75205f329cb513338bf6a2ddf"
 dependencies = [
  "async-trait",
  "buttplug_core",
@@ -701,8 +681,6 @@ dependencies = [
 [[package]]
 name = "buttplug_server_hwmgr_websocket"
 version = "12.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "491549cdcc6c794554e28b4a7d06841fddcd6788687709efa179dd30b86c43ba"
 dependencies = [
  "async-trait",
  "buttplug_core",
@@ -726,8 +704,6 @@ dependencies = [
 [[package]]
 name = "buttplug_transport_websocket_tungstenite"
 version = "12.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d14af3444486c7226e691f937e4595b83a4b25658eb96cf0442a429c72d55ca"
 dependencies = [
  "buttplug_core",
  "dashmap 6.2.1",
@@ -1912,8 +1888,6 @@ dependencies = [
 [[package]]
 name = "intiface-engine"
 version = "5.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fbfbe9196a429747cfc54d25307403db596668796e8f77855a7acc19f06ccac"
 dependencies = [
  "anyhow",
  "argh",

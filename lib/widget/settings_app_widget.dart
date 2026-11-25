@@ -63,7 +63,7 @@ class SettingsAppWidget extends AbstractSettingsSection {
         initialValue: cubit.checkForUpdateOnStart,
         onToggle: (value) => cubit.checkForUpdateOnStart = value,
         title: _settingsText(
-          "Check For Updates when Intiface Central Launches",
+          "Check for Device Config Updates on Launch",
         ),
       ),
       SettingsTile.switchTile(

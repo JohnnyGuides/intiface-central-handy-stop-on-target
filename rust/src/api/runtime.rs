@@ -455,6 +455,7 @@ pub struct _EngineOptionsExternal {
   pub repeater_remote_address: Option<String>,
   pub rest_api_port: Option<u16>,
   pub emit_output_observations: bool,
+  pub handy_stop_on_target: bool,
 }
 
 pub fn rust_runtime_started() -> bool {

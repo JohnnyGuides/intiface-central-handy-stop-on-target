@@ -1,13 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intiface_central/bloc/update/github_update_provider.dart';
 import 'package:intiface_central/bloc/configuration/intiface_configuration_cubit.dart';
-import 'package:intiface_central/util/intiface_util.dart';
 import 'package:intiface_central/bloc/update/update_bloc.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class SettingsVersionWidget extends AbstractSettingsSection {
   final IntifaceConfigurationCubit cubit;
@@ -31,100 +26,6 @@ class SettingsVersionWidget extends AbstractSettingsSection {
         ],
       ),
     );
-  }
-
-  List<Widget> _buildUpdateLinks(BuildContext context) {
-    final links = <Widget>[];
-    if (!isDesktop() ||
-        !canShowUpdate() ||
-        cubit.currentAppVersion == cubit.latestAppVersion) {
-      return links;
-    }
-
-    if (Platform.isWindows) {
-      links.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: InkWell(
-            onTap: () {
-              showDialog<void>(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  var updater = IntifaceCentralDesktopUpdater();
-                  updater.downloadUpdate();
-                  return AlertDialog(
-                    title: const Text('Downloading Update'),
-                    content: const SingleChildScrollView(
-                      child: ListBody(
-                        children: <Widget>[
-                          SpinKitFadingCircle(color: Colors.black, size: 50.0),
-                          Text(
-                            'Downloading update. Intiface Central will close and installer will run after download. Hit cancel to stop download.',
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('Cancel'),
-                        onPressed: () {
-                          updater.stopExit();
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: Text(
-              "Intiface Central Desktop version ${cubit.latestAppVersion} is available, click here to update now.",
-              style: const TextStyle(color: Colors.green),
-            ),
-          ),
-        ),
-      );
-      links.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: InkWell(
-            onTap: () async {
-              const url =
-                  "https://github.com/intiface/intiface-central/releases";
-              if (await canLaunchUrlString(url)) {
-                await launchUrlString(url);
-              }
-            },
-            child: const Text(
-              "If autoupdate doesn't work, or you want to install manually, click here to visit downloads site.",
-              style: TextStyle(color: Colors.green),
-            ),
-          ),
-        ),
-      );
-    } else {
-      links.add(
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: InkWell(
-            onTap: () async {
-              const url =
-                  "https://github.com/intiface/intiface-central/releases";
-              if (await canLaunchUrlString(url)) {
-                await launchUrlString(url);
-              }
-            },
-            child: Text(
-              "Intiface Central Desktop version ${cubit.latestAppVersion} is available, click here to visit releases site.",
-              style: const TextStyle(color: Colors.green),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return links;
   }
 
   @override
@@ -154,16 +55,20 @@ class SettingsVersionWidget extends AbstractSettingsSection {
               cubit.currentDeviceConfigVersion,
               context,
             ),
-            ..._buildUpdateLinks(context),
             const Divider(),
+            const Text(
+              "This unofficial build adds the Handy stop-at-target setting "
+              "(used for game integrations). "
+              "Replacing this build with an official Intiface release "
+              "removes this setting.",
+            ),
+            const SizedBox(height: 8),
             Center(
               child: OutlinedButton(
                 onPressed: !engineIsRunning
                     ? () => BlocProvider.of<UpdateBloc>(context).add(RunUpdate())
                     : null,
-                child: isDesktop()
-                    ? const Text("Check For App and Config Updates")
-                    : const Text("Check for Config Updates"),
+                child: const Text("Check for Device Config Updates"),
               ),
             ),
           ],

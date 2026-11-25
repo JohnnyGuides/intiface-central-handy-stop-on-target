@@ -3354,8 +3354,8 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   EngineOptionsExternal dco_decode_engine_options_external(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     final arr = raw as List<dynamic>;
-    if (arr.length != 27)
-      throw Exception('unexpected arr length: expect 27 but see ${arr.length}');
+    if (arr.length != 28)
+      throw Exception('unexpected arr length: expect 28 but see ${arr.length}');
     return EngineOptionsExternal(
       deviceConfigJson: dco_decode_opt_String(arr[0]),
       userDeviceConfigJson: dco_decode_opt_String(arr[1]),
@@ -3384,6 +3384,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       repeaterRemoteAddress: dco_decode_opt_String(arr[24]),
       restApiPort: dco_decode_opt_box_autoadd_u_16(arr[25]),
       emitOutputObservations: dco_decode_bool(arr[26]),
+      handyStopOnTarget: dco_decode_bool(arr[27]),
     );
   }
 
@@ -4220,6 +4221,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     var var_repeaterRemoteAddress = sse_decode_opt_String(deserializer);
     var var_restApiPort = sse_decode_opt_box_autoadd_u_16(deserializer);
     var var_emitOutputObservations = sse_decode_bool(deserializer);
+    var var_handyStopOnTarget = sse_decode_bool(deserializer);
     return EngineOptionsExternal(
       deviceConfigJson: var_deviceConfigJson,
       userDeviceConfigJson: var_userDeviceConfigJson,
@@ -4248,6 +4250,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       repeaterRemoteAddress: var_repeaterRemoteAddress,
       restApiPort: var_restApiPort,
       emitOutputObservations: var_emitOutputObservations,
+      handyStopOnTarget: var_handyStopOnTarget,
     );
   }
 
@@ -5247,6 +5250,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     sse_encode_opt_String(self.repeaterRemoteAddress, serializer);
     sse_encode_opt_box_autoadd_u_16(self.restApiPort, serializer);
     sse_encode_bool(self.emitOutputObservations, serializer);
+    sse_encode_bool(self.handyStopOnTarget, serializer);
   }
 
   @protected

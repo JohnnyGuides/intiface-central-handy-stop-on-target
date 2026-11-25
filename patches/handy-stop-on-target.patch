@@ -1,0 +1,167 @@
+diff --git a/crates/buttplug_server/src/device/protocol_impl/thehandy_v3/mod.rs b/crates/buttplug_server/src/device/protocol_impl/thehandy_v3/mod.rs
+index 37a12a82..d9fa063a 100644
+--- a/crates/buttplug_server/src/device/protocol_impl/thehandy_v3/mod.rs
++++ b/crates/buttplug_server/src/device/protocol_impl/thehandy_v3/mod.rs
+@@ -20,7 +20,7 @@ use buttplug_server_device_config::{
+ };
+ use prost::Message;
+ use std::sync::Arc;
+-use std::sync::atomic::{AtomicU32, Ordering};
++use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+ use uuid::{Uuid, uuid};
+ 
+ #[allow(clippy::enum_variant_names)]
+@@ -70,6 +70,17 @@ impl ProtocolIdentifier for TheHandyV3Identifier {
+ #[derive(Default)]
+ pub struct TheHandyV3Initializer {}
+ 
++/// Whether position commands ask the Handy to stop at their target (HDSP `stop_on_target`).
++/// Off (the default) the Handy keeps moving at the commanded speed until the next command
++/// arrives, so a late command lets it travel past the position the app asked for. Read when a
++/// Handy connects.
++static STOP_ON_TARGET: AtomicBool = AtomicBool::new(false);
++
++/// Sets whether Handys connected from now on stop at each position command's target.
++pub fn set_stop_on_target(stop: bool) {
++  STOP_ON_TARGET.store(stop, Ordering::Relaxed);
++}
++
+ #[async_trait]
+ impl ProtocolInitializer for TheHandyV3Initializer {
+   async fn initialize(
+@@ -144,13 +155,17 @@ impl ProtocolInitializer for TheHandyV3Initializer {
+       // I'm only getting errors back for this... Which suggests the protobuf is out-of-sync for my firmware?
+     }
+ 
+-    Ok(Arc::new(TheHandyV3::default()))
++    Ok(Arc::new(TheHandyV3 {
++      stop_on_target: STOP_ON_TARGET.load(Ordering::Relaxed),
++      ..Default::default()
++    }))
+   }
+ }
+ 
+ #[derive(Default)]
+ pub struct TheHandyV3 {
+   seq: Arc<AtomicU32>,
++  stop_on_target: bool,
+ }
+ 
+ impl ProtocolHandler for TheHandyV3 {
+@@ -188,7 +203,7 @@ impl ProtocolHandler for TheHandyV3 {
+           id: self.seq.fetch_add(1, Ordering::Relaxed),
+           params: Some(handy_rpc::request::Params::RequestHdspXpTSet(
+             handy_rpc::RequestHdspXpTSet {
+-              stop_on_target: false,
++              stop_on_target: self.stop_on_target,
+               t: duration,                  // time in ms
+               xp: position as f32 / 100f32, // position 0.0-1.0
+             },
+@@ -278,4 +293,27 @@ mod tests {
+     assert_eq!(params.t, duration);
+     assert!(!params.stop_on_target);
+   }
++
++  #[test]
++  fn position_command_can_stop_on_target() {
++    let handy = TheHandyV3 {
++      stop_on_target: true,
++      ..Default::default()
++    };
++    let commands = handy
++      .handle_hw_position_with_duration_cmd(0, uuid!("00000000-0000-0000-0000-000000000001"), 25, 1_500)
++      .expect("position command should be created");
++    let HardwareCommand::Write(write) = &commands[0] else {
++      panic!("expected a hardware write command");
++    };
++    let message = handy_rpc::RpcMessage::decode(write.data().as_slice())
++      .expect("position command should decode as an RPC message");
++    let Some(handy_rpc::rpc_message::Message::Request(request)) = message.message else {
++      panic!("expected an RPC request");
++    };
++    let Some(handy_rpc::request::Params::RequestHdspXpTSet(params)) = request.params else {
++      panic!("expected a position request");
++    };
++    assert!(params.stop_on_target);
++  }
+ }
+diff --git a/crates/intiface_engine/src/bin/main.rs b/crates/intiface_engine/src/bin/main.rs
+index 17a8f635..5a0acb13 100644
+--- a/crates/intiface_engine/src/bin/main.rs
++++ b/crates/intiface_engine/src/bin/main.rs
+@@ -102,6 +102,11 @@ pub struct IntifaceCLIArguments {
+   #[getset(get_copy = "pub")]
+   use_bluetooth_le: bool,
+ 
++  /// make The Handy (firmware 4) stop at each position command's target instead of moving on
++  #[argh(switch)]
++  #[getset(get_copy = "pub")]
++  handy_stop_on_target: bool,
++
+   /// turn off serial device support
+   #[argh(switch)]
+   #[getset(get_copy = "pub")]
+@@ -239,6 +244,7 @@ impl TryFrom<IntifaceCLIArguments> for EngineOptions {
+ 
+     builder
+       .use_bluetooth_le(args.use_bluetooth_le())
++      .handy_stop_on_target(args.handy_stop_on_target())
+       .use_serial_port(args.use_serial())
+       .use_lovense_dongle_serial(args.use_lovense_dongle_serial())
+       .use_lovense_dongle_hid(args.use_lovense_dongle_hid())
+diff --git a/crates/intiface_engine/src/engine.rs b/crates/intiface_engine/src/engine.rs
+index 902f624b..a9a0e299 100644
+--- a/crates/intiface_engine/src/engine.rs
++++ b/crates/intiface_engine/src/engine.rs
+@@ -141,6 +141,10 @@ impl IntifaceEngine {
+     frontend: Option<Arc<dyn Frontend>>,
+     dcm: &Option<Arc<DeviceConfigurationManager>>,
+   ) -> Result<(), IntifaceEngineError> {
++    buttplug_server::device::protocol_impl::thehandy_v3::set_stop_on_target(
++      options.handy_stop_on_target(),
++    );
++
+     // Set up Frontend
+     if let Some(frontend) = &frontend {
+       let frontend_loop = frontend_external_event_loop(frontend.clone(), self.stop_token.clone());
+diff --git a/crates/intiface_engine/src/options.rs b/crates/intiface_engine/src/options.rs
+index 3dc687aa..ff9c84b6 100644
+--- a/crates/intiface_engine/src/options.rs
++++ b/crates/intiface_engine/src/options.rs
+@@ -63,6 +63,8 @@ pub struct EngineOptions {
+   rest_api_port: Option<u16>,
+   #[getset(get_copy = "pub")]
+   emit_output_observations: bool,
++  #[getset(get_copy = "pub")]
++  handy_stop_on_target: bool,
+ }
+ 
+ #[derive(Default, Debug, Clone)]
+@@ -94,6 +96,7 @@ pub struct EngineOptionsExternal {
+   pub repeater_remote_address: Option<String>,
+   pub rest_api_port: Option<u16>,
+   pub emit_output_observations: bool,
++  pub handy_stop_on_target: bool,
+ }
+ 
+ impl From<EngineOptionsExternal> for EngineOptions {
+@@ -126,6 +129,7 @@ impl From<EngineOptionsExternal> for EngineOptions {
+       repeater_remote_address: other.repeater_remote_address,
+       rest_api_port: other.rest_api_port,
+       emit_output_observations: other.emit_output_observations,
++      handy_stop_on_target: other.handy_stop_on_target,
+     }
+   }
+ }
+@@ -279,6 +283,11 @@ impl EngineOptionsBuilder {
+     self
+   }
+ 
++  pub fn handy_stop_on_target(&mut self, value: bool) -> &mut Self {
++    self.options.handy_stop_on_target = value;
++    self
++  }
++
+   pub fn finish(&mut self) -> EngineOptions {
+     self.options.clone()
+   }

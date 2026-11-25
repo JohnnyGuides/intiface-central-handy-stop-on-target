@@ -196,6 +196,11 @@ class AllowExperimentalRestServer extends IntifaceConfigurationState {
   AllowExperimentalRestServer(this.value);
 }
 
+class HandyStopOnTargetState extends IntifaceConfigurationState {
+  final bool value;
+  HandyStopOnTargetState(this.value);
+}
+
 class IntifaceConfigurationCubit extends Cubit<IntifaceConfigurationState> {
   final SharedPreferences _prefs;
 
@@ -283,6 +288,7 @@ class IntifaceConfigurationCubit extends Cubit<IntifaceConfigurationState> {
 
     restLocalPort = _prefs.getInt("restLocalPort") ?? 3000;
     allowExperimentalRestServer = _prefs.getBool("allowExperimentalRestServer") ?? false;
+    handyStopOnTarget = _prefs.getBool("handyStopOnTarget") ?? true;
     // Default for appMode built into getter, since it also requires a type conversion.
   }
 
@@ -559,6 +565,12 @@ class IntifaceConfigurationCubit extends Cubit<IntifaceConfigurationState> {
     emit(AllowExperimentalRestServer(value));
   }
 
+  bool get handyStopOnTarget => _prefs.getBool("handyStopOnTarget")!;
+  set handyStopOnTarget(bool value) {
+    _prefs.setBool("handyStopOnTarget", value);
+    emit(HandyStopOnTargetState(value));
+  }
+
   Future<EngineOptionsExternal> getEngineOptions() async {
     String? deviceConfigFile;
     if (await IntifacePaths.deviceConfigFile.exists()) {
@@ -597,6 +609,7 @@ class IntifaceConfigurationCubit extends Cubit<IntifaceConfigurationState> {
       repeaterRemoteAddress: repeaterRemoteAddress,
       restApiPort: appMode == AppMode.restApi ? restLocalPort : null,
       emitOutputObservations: true,
+      handyStopOnTarget: handyStopOnTarget,
     );
   }
 }

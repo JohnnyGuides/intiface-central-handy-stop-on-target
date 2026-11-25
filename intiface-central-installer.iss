@@ -9,11 +9,11 @@
 #endif
 
 [Setup]
-AppName=Intiface Central
+AppName=Intiface Central (Handy Stop-at-Target Fork)
 AppVersion={#Version}
-AppPublisher=Nonpolynomial Labs, LLC
-AppPublisherURL=www.intiface.com
-AppId={{702b7792-a984-48e4-a7e2-734828b0e9f1}
+AppPublisher=JohnnyGuides
+AppPublisherURL=https://github.com/JohnnyGuides/intiface-central-handy-stop-on-target
+AppId={{a6b51e85-13b2-4cfd-a37e-598c8db64546}
 SetupIconFile=windows\runner\resources\app_icon.ico
 WizardImageFile=assets\icons\intiface_central_icon.bmp
 WizardSmallImageFile=assets\icons\intiface_central_icon.bmp
@@ -21,7 +21,7 @@ DefaultDirName={code:GetDefaultDirName}
 UninstallDisplayIcon=windows\runner\resources\app_icon.ico
 Compression=lzma2
 SolidCompression=yes
-OutputBaseFilename=intiface-central-installer
+OutputBaseFilename=intiface-central-handy-stop-on-target-windows-x64-setup
 OutputDir=.\installer
 // Force local install
 PrivilegesRequired=lowest
@@ -31,9 +31,6 @@ PrivilegesRequired=lowest
 // LicenseFile=LICENSE
 
 
-[Dirs]
-Name: "{localappdata}\IntifaceCentral"
-
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
@@ -41,12 +38,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "build\windows\x64\runner\{#Configuration}\*.exe"; DestDir: "{app}"
 Source: "build\windows\x64\runner\{#Configuration}\*.dll"; DestDir: "{app}"
 Source: "build\windows\x64\runner\{#Configuration}\data\*.*"; DestDir: "{app}\data"; Flags: recursesubdirs
-Source: "Readme.md"; DestDir: "{app}"; DestName: "Readme.txt"
-// Source: "LICENSE"; DestDir: "{app}"; DestName: "License.txt"
+Source: "README.md"; DestDir: "{app}"
+Source: "LICENSE.md"; DestDir: "{app}"
+Source: "..\buttplug\LICENSE"; DestDir: "{app}"; DestName: "LICENSE-Buttplug.txt"
 
 [Icons]
-Name: "{code:GetDefaultMenuName}\Intiface Central"; Filename: "{app}\intiface_central.exe"; IconFilename: "{app}\intiface_central.exe" 
-Name: "{code:GetDefaultDesktopName}\Intiface Central"; Filename: "{app}\intiface_central.exe"; Tasks: desktopicon; IconFilename: "{app}\intiface_central.exe"
+Name: "{code:GetDefaultMenuName}\Intiface Central (Handy Stop-at-Target Fork)"; Filename: "{app}\intiface_central.exe"; IconFilename: "{app}\intiface_central.exe"
+Name: "{code:GetDefaultDesktopName}\Intiface Central (Handy Stop-at-Target Fork)"; Filename: "{app}\intiface_central.exe"; Tasks: desktopicon; IconFilename: "{app}\intiface_central.exe"
 
 // [Run]
 // Filename: "{app}\Readme.txt"; Description: "View the README file"; Flags: postinstall shellexec unchecked
@@ -119,11 +117,11 @@ function GetDefaultDirName(Param: string): string;
 begin
   if IsAdmin then
   begin
-    Result := ExpandConstant('{pf}\IntifaceCentral');
+    Result := ExpandConstant('{pf}\IntifaceCentralHandyStopOnTarget');
   end
     else
   begin
-    Result := ExpandConstant('{userappdata}\IntifaceCentral');
+    Result := ExpandConstant('{userappdata}\IntifaceCentralHandyStopOnTarget');
   end;
 end;
 

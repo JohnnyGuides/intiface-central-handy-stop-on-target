@@ -305,23 +305,6 @@ class ControlWidget extends StatelessWidget {
                         },
                       ),
                       Visibility(
-                        visible:
-                            isDesktop() &&
-                            canShowUpdate() &&
-                            configCubit.currentAppVersion !=
-                                configCubit.latestAppVersion,
-                        child: TextButton.icon(
-                          label: const Text("Update"),
-                          onPressed: () => navCubit.goSettings(),
-                          icon: const Icon(Icons.update, color: Colors.green),
-                          style: ButtonStyle(
-                            foregroundColor: WidgetStateProperty.resolveWith(
-                              (s) => Colors.green,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Visibility(
                         visible: false,
                         child: TextButton.icon(
                           onPressed: () => navCubit.goNews(),
